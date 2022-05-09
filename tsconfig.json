@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "moduleResolution": "Node",
+        "module": "CommonJS",
+        "strict": true,
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "removeComments": true,
+        "importHelpers": true,
+        "outDir": "./out/js/",
+        "lib": [
+            "DOM", "ESNext"
+        ]
+    }
+}
