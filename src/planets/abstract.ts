@@ -25,8 +25,10 @@ export abstract class AbstractPlanet extends PIXI.Container {
     public planetTexture?: string;
     public textureRotateSpeed: number = 0;
 
+    public isSelected: boolean = false;
     public abstract drawOrbit: boolean;
     private orbit?: Ring;
+    private selectedOrbit?: Ring;
     public abstract orbitAngle: number;
     public abstract orbitSpeed: number;
     public abstract orbitColor: number;
@@ -47,17 +49,32 @@ export abstract class AbstractPlanet extends PIXI.Container {
         this.interactive = true;
     }
 
+    get solarX(): number {
+        const mainPosition = this.getGlobalPosition(this._parent?.position || this.position);
+
+        return mainPosition.x
+    }
+
+    get solarY(): number {
+        const mainPosition = this.getGlobalPosition(this._parent?.position || this.position);
+
+        return mainPosition.y
+    }
+
     public init() {
         this.setupOrbit()
         this.setupCircle();
-        this.setupTexture();
 
-        this.addChild(new Circle({
-            x: 0,
-            y: 0,
-            radius: this.radius/50,
-            color: 0x03c400,
-        }))
+        if (this.planetTexture) {
+            this.setupTexture();
+        } else {
+            this.addChild(new Circle({
+                x: 0,
+                y: 0,
+                radius: this.radius / 50,
+                color: 0x03c400,
+            }))
+        }
 
         const text = new PIXI.Text(this.info.name, {
             fill: 0x03c400, fontSize: this.radius / 6
@@ -117,7 +134,19 @@ export abstract class AbstractPlanet extends PIXI.Container {
             alpha: 0.1
         })
 
+        this.selectedOrbit = new Ring({
+            x: -this.distance,
+            y: -this.distance,
+            radius: this.distance,
+            color: 0x00ff00,
+            alpha: 0.5
+        })
+
+        this.orbit.visible = !this.isSelected
+        this.selectedOrbit.visible = this.isSelected
+
         this._parent.addChildAt(this.orbit, 0);
+        this._parent.addChildAt(this.selectedOrbit, 0);
     }
 
     updateOrbit() {
@@ -141,16 +170,21 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
         this.orbitAngle += this.orbitSpeed * delta;
 
-        if (this.angle > 360) this.angle -= 360;
-        if (this.angle < 0) this.angle += 360;
+        if (this.orbitAngle > 360) this.orbitAngle -= 360;
+        if (this.orbitAngle < 0) this.orbitAngle += 360;
 
         if (this.drawOrbit) {
-            if (!this.orbit) {
+            if (!this.orbit || !this.selectedOrbit) {
                 this.setupOrbit();
             }
 
+            this.orbit!.visible = !this.isSelected
             this.orbit!.x = this.distance;
             this.orbit!.y = this.distance;
+
+            this.selectedOrbit!.visible = this.isSelected
+            this.selectedOrbit!.x = this.distance;
+            this.selectedOrbit!.y = this.distance;
         }
     }
 

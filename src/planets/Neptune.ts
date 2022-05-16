@@ -16,7 +16,7 @@ export class Neptune extends AbstractPlanet {
     public radius: number = 1000 * 3.81 / 2;
     public distance: number = 10000 * 30.06;
     public planetTexture: string = './static/images/neptune.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = -0.02;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);

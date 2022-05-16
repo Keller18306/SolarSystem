@@ -16,7 +16,7 @@ export class Jupiter extends AbstractPlanet {
     public radius: number = 1000 * 11.2 / 2;
     public distance: number = 10000 * 5.20;
     public planetTexture: string = './static/images/jupiter.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = -0.02;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);

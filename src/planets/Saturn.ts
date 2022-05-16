@@ -16,7 +16,7 @@ export class Saturn extends AbstractPlanet {
     public radius: number = 1000 * 9.41 / 2;
     public distance: number = 10000 * 9.54;
     public planetTexture: string = './static/images/saturn.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = 0;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);

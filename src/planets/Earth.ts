@@ -16,7 +16,7 @@ export class Earth extends AbstractPlanet {
     public radius: number = 1000 * 1 / 2;
     public distance: number = 10000 * 1;
     public planetTexture: string = './static/images/earth.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = -0.02;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);

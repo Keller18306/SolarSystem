@@ -132,10 +132,12 @@ export class Main {
 
     private createPlanetInfo(planet: AbstractPlanet) {
         if (this.planetInfo) {
+            this.planetInfo.planet.isSelected = false
             this.planetInfo.destroy()
         }
 
-        const container = new PlanetInfoContainer(planet)
+        planet.isSelected = true
+        const container = new PlanetInfoContainer(planet, this.app.ticker)
 
         container.x = this.width - container.width - 2
         container.y = this.height - container.height - 2
@@ -152,6 +154,20 @@ export class Main {
         this.texts.scale.x = 0
         this.texts.scale.y = this.height - this.texts.scale.height
 
+        this.texts.X = new PIXI.Text('', { fill: 0xffffff, fontSize: 10 })
+        this.texts.X.y = this.height - this.texts.X.height
+
+        this.texts.Y = new PIXI.Text('', { fill: 0xffffff, fontSize: 10 })
+        this.texts.Y.y = this.height - this.texts.Y.height
+
+        this.app.ticker.add(() => {
+            this.texts.X.x = this.texts.scale.x + this.texts.scale.width + 6
+            this.texts.X.text = `camX: ${this.camera.x.toFixed(2)}`
+
+            this.texts.Y.x = this.texts.X.x + this.texts.X.width + 6
+            this.texts.Y.text = `camY: ${this.camera.y.toFixed(2)}`
+        })
+
         let planetListY: number = 0
         for (const planetId in this.solar.planets) {
             const planet = this.solar.planets[planetId]
@@ -165,7 +181,7 @@ export class Main {
             planetListY += text.height + 2
 
             text.on('pointerdown', () => {
-                this.createPlanetInfo(planet)
+                this.createPlanetInfo(planet);
                 this.camera.follow(planet)
                 this.infoLocked = true
             })
@@ -194,7 +210,9 @@ export class Main {
             texts.addChild(text)
         }
 
-        texts.addChild(this.texts.scale)
+        for (const key in this.texts) {
+            texts.addChild(this.texts[key])
+        }
 
         this.app.stage.addChild(texts)
     }
@@ -218,6 +236,7 @@ export class Main {
             this.infoLocked = false
             this.camera.plugins.remove('follow')
             if (this.planetInfo) {
+                this.planetInfo.planet.isSelected = false
                 this.planetInfo.destroy()
             }
         })

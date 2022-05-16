@@ -16,7 +16,7 @@ export class Mercury extends AbstractPlanet {
     public radius: number = 1000 * 0.382 / 2;
     public distance: number = 10000 * 0.38;
     public planetTexture: string = './static/images/mercury.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = -0.02;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);

@@ -16,7 +16,7 @@ export class Mars extends AbstractPlanet {
     public radius: number = 1000 * 0.53 / 2;
     public distance: number = 10000 * 1.52;
     public planetTexture: string = './static/images/mars.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = -0.02;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);

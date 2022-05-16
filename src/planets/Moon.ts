@@ -16,7 +16,7 @@ export class Moon extends AbstractPlanet {
     public radius: number = 200;
     public distance: number = 1000;
     public planetTexture: string = './static/images/moon.png';
-    public textureRotateSpeed: number = 0.02;
+    public textureRotateSpeed: number = -0.02;
 
     public drawOrbit: boolean = true;
     public orbitAngle: number = rand(0, 360);
