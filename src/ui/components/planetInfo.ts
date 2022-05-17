@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { AbstractPlanet } from './planets/abstract';
+import { AbstractPlanet } from '../../planets/abstract';
 
 export class PlanetInfoContainer extends PIXI.Container {
     public planet: AbstractPlanet;

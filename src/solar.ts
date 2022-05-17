@@ -9,13 +9,17 @@ import { Neptune } from './planets/Neptune';
 import { Saturn } from './planets/Saturn';
 import { Uranus } from './planets/Uranus';
 import { Venus } from './planets/Venus';
-import { Viewport } from 'pixi-viewport';
 import { AbstractPlanet } from './planets/abstract';
+import { App } from '.';
 
 export class Solar {
+    private app: App;
+
     public planets: { [key: string]: AbstractPlanet } = {}
 
-    constructor(ticker: PIXI.Ticker, container: Viewport) {
+    constructor(app: App) {
+        this.app = app;
+
         this.planets.Sun = new Sun([
             this.planets.Mercury = new Mercury(),
             this.planets.Venus = new Venus(),
@@ -29,10 +33,12 @@ export class Solar {
             this.planets.Neptune = new Neptune()
         ])
 
-        ticker.add((delta) => { 
+        this.app.camera.addChild(this.planets.Sun)
+    }
+
+    public start() {
+        this.app.pixi.ticker.add((delta) => { 
             this.planets.Sun.update(delta)
         })
-
-        container.addChild(this.planets.Sun)
     }
 }

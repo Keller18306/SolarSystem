@@ -1,4 +1,16 @@
 {
+  "name": "solarsystem",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run dev",
+    "dev": "webpack serve --open --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "author": "Keller",
+  "license": "MIT",
+  "description": "",
   "dependencies": {
     "pixi-viewport": "^4.34.4",
     "pixi.js": "^6.2.2"
@@ -12,16 +24,5 @@
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.9.0",
     "webpack-merge": "^5.8.0"
-  },
-  "name": "solarsystem",
-  "version": "1.0.0",
-  "main": "./src/index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack serve --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
-  },
-  "author": "Keller",
-  "license": "MIT",
-  "description": ""
+  }
 }

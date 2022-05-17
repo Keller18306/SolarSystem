@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import { Main } from '..';
 import { Circle } from '../circle';
 import { Ring } from '../ring';
 

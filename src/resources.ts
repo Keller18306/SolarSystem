@@ -1,152 +1,103 @@
-export class Resources {
+export class AppResources {
     private list: {
-        [key: string]: {
-            type: 'audio' | 'image',
-            src: string
-        }
+        image: string[],
+        audio: string[]
     } = {
-            'ambient': {
-                type: 'audio',
-                src: './static/ambient.wav'
-            },
+            image: [],
+            audio: []
         };
 
-    private loaded: {
-        [key: string]: {
-            type: 'audio',
-            src: string,
-            object: HTMLAudioElement
-        } | {
-            type: 'image',
-            src: string,
-            object: HTMLImageElement
+    public loaded: {
+        image: {
+            [key: string]: HTMLImageElement
+        },
+        audio: {
+            [key: string]: HTMLAudioElement
         }
-    } = {};
+    } = {
+            image: {},
+            audio: {}
+        };
 
-    private static instance: Resources;
-
-    public static getInstance(): Resources {
-        if (!Resources.instance) {
-            Resources.instance = new Resources();
-        }
-
-        return Resources.instance;
+    public async startLoding() {
+        await this.initList();
+        await this.loadImages();
+        await this.loadAudios();
     }
 
-    private constructor() {
+    private async initList() {
+        console.debug('Load resources list');
 
+        const json = await this.loadJson();
+
+        Object.assign(this.list, json);
     }
 
-    public static getAudio(key: string): HTMLAudioElement {
-        const that = Resources.getInstance();
+    private loadJson() {
+        const request = new XMLHttpRequest();
 
-        const resource = that.loaded[key];
+        const promise = new Promise<any>((resolve) => {
+            request.onload = () => {
+                resolve(JSON.parse(request.responseText));
+            }
+        })
 
-        if (!resource) {
-            throw new Error(`Resource ${key} is not loaded`);
-        }
+        request.open('GET', './resources.json', true);
+        request.send();
 
-        if (resource.type !== 'audio') {
-            throw new Error(`Resource ${key} is not audio`);
-        }
-
-        return resource.object;
+        return promise;
     }
 
-    public static getImage(key: string): HTMLImageElement {
-        const that = Resources.getInstance();
+    private async loadImage(src: string): Promise<HTMLImageElement> {
+        console.debug(`load image: ${src}`);
 
-        const resource = that.loaded[key];
+        const image = new Image();
 
-        if (!resource) {
-            throw new Error(`Resource ${key} is not loaded`);
-        }
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+            image.onload = () => {
+                this.loaded.image[src] = image
 
-        if (resource.type !== 'image') {
-            throw new Error(`Resource ${key} is not image`);
-        }
+                resolve(image);
+            }
 
-        return resource.object;
+            image.onerror = (e) => {
+                reject(e);
+            }
+
+            image.src = src;
+        })
     }
 
-    public static async init(): Promise<void> {
-        const that = Resources.getInstance();
-
-        const promises: Promise<void>[] = [];
-
-        for (const key in that.list) {
-            const promise = that.load(key);
-
-            promises.push(promise);
+    private async loadImages() {
+        for (const src of this.list.image) {
+            await this.loadImage(src);
         }
-
-        return Promise.all(promises).then(() => { });
     }
 
-    private load(key: string): Promise<void> {
-        if (this.loaded[key]) {
-            return Promise.resolve();
-        }
+    private async loadAudio(src: string): Promise<HTMLAudioElement> {
+        console.debug(`load audio: ${src}`);
 
-        const resource = this.list[key];
+        const audio = new Audio();
 
-        if (resource.type === 'audio') {
-            return new Promise((resolve, reject) => {
-                const audio = new Audio();
-                audio.onloadeddata = () => {
-                    this.loaded[key] = {
-                        type: 'audio',
-                        src: resource.src,
-                        object: audio
-                    };
+        return new Promise<HTMLAudioElement>((resolve, reject) => {
+        
+            audio.onloadeddata = () => {
+                this.loaded.audio[src] = audio;
 
-                    resolve();
-                }
+                resolve(audio);
+            }
 
-                audio.onerror = (e) => {
-                    reject(e);
-                }
+            audio.onerror = (e) => {
+                reject(e);
+            }
 
-                audio.src = resource.src;
-            });
-        }
-
-
-        if (resource.type === 'image') {
-            return new Promise((resolve, reject) => {
-                const image = new Image();
-
-                image.onload = () => {
-                    this.loaded[key] = {
-                        type: 'image',
-                        src: resource.src,
-                        object: image
-                    };
-
-                    resolve();
-
-                }
-
-                image.onerror = (e) => {
-                    reject(e);
-                }
-
-                image.src = resource.src;
-            })
-        }
-
-        throw new Error(`Resource ${key} has unknown type`);
+            audio.src = src;
+        });
     }
 
-    public static get(key: string): HTMLAudioElement | HTMLImageElement {
-        const that = Resources.getInstance();
-
-        if (!that.loaded[key]) {
-            throw new Error(`Resource ${key} is not loaded`);
+    private async loadAudios() {
+        for (const src of this.list.audio) {
+            await this.loadAudio(src);
         }
-
-        return that.loaded[key].object;
     }
 }
-
-(window as any).Resources = Resources;

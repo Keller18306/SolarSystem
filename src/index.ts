@@ -1,67 +1,76 @@
 import * as PIXI from 'pixi.js'
 import { Viewport } from 'pixi-viewport'
-import { Button } from './button';
+import { Button } from './ui/components/button';
 import { Solar } from './solar';
 import { Storage } from './storage';
-import { PlanetInfoContainer } from './planetInfo';
+import { PlanetInfoContainer } from './ui/components/planetInfo';
 import { AbstractPlanet } from './planets/abstract';
+import { AppEvents } from './events';
+import { AppUI } from './ui';
+import { AppResources } from './resources';
 
-export class Main {
-    private static instance?: Main;
+export class App {
+    private static _instance?: App
 
-    public static getInstance(): Main {
-        if (!Main.instance) {
-            Main.instance = new Main()
+    public static getInstance(): App {
+        if (!this._instance) {
+            throw new Error('App not created')
         }
 
-        return Main.instance
+        return this._instance
     }
 
-    private images: string[] = [
-        './static/images/mars.png',
-        './static/images/neptune.png',
-        './static/images/venus.png',
-    ]
+    public static create(): App {
+        if (this._instance) throw new Error('App already created')
+        
+        this._instance = new App()
 
-    public app: PIXI.Application;
+        return this._instance
+    }
+
+    public pixi: PIXI.Application;
     public camera: Viewport;
+    public events: AppEvents
+    public ui: AppUI
+    public resources: AppResources;
 
-    private width: number = window.innerWidth
-    private height: number = window.innerHeight
+    public texts: { [key: string]: PIXI.Text } = {}
 
-    private texts: { [key: string]: PIXI.Text } = {}
+    public storage: Storage;
 
-    private storage: Storage;
+    public solar: Solar
 
-    private solar: Solar
+    public planetInfo?: PlanetInfoContainer
+    public infoLocked: boolean = false;
 
-    private planetInfo?: PlanetInfoContainer
-    private infoLocked: boolean = false;
-
-    constructor() {
+    private constructor() {
         PIXI.utils.skipHello();
-        this.app = new PIXI.Application({
+        this.pixi = new PIXI.Application({
             width: window.innerWidth,
             height: window.innerHeight,
             resolution: window.devicePixelRatio
         })
 
-        document.body.appendChild(this.app.view)
+        document.body.appendChild(this.pixi.view)
 
         this.camera = new Viewport({
-            screenWidth: this.width,
-            screenHeight: this.height,
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight,
         });
         this.camera.drag().wheel()
 
-        this.app.stage.sortableChildren = true
+        this.pixi.stage.sortableChildren = true
 
-        this.app.stage.interactive = true
-        this.app.stage.addChild(this.camera)
+        this.pixi.stage.interactive = true
+        this.pixi.stage.addChild(this.camera)
 
         this.storage = Storage.getInstance()
 
-        this.solar = new Solar(this.app.ticker, this.camera)
+        this.solar = new Solar(this)
+
+        this.events = new AppEvents(this)
+        this.ui = new AppUI(this)
+        this.resources = new AppResources()
 
         this.run()
     }
@@ -74,35 +83,20 @@ export class Main {
         this.camera.scale.set(value, value)
 
         this.storage.setNumber('scale', value)
-
-        this.texts.scale.text = `Масштаб: ${value.toFixed(5)}X`
     }
 
     public async run() {
-        //await Resources.init()
+        await this.resources.startLoding()
 
-        const promiseImages = new Promise<void>((resolve) => {
-            this.app.loader.load(() => {
-                resolve()
-            })
-        })
-
-        for (const image of this.images) {
-            this.app.loader.add(image, image)
-        }
-
-        await Promise.all([
-            promiseImages
-        ])
-
+        this.solar.start()
+        this.ui.initTexts()
         this.setupTexts()
-        this.setupEvents()
         this.controllButtons()
         
         this.scale = this.storage.getNumber('scale') || 0.002
 
-        this.camera.x = this.storage.getNumber('posX') || this.width / 2
-        this.camera.y = this.storage.getNumber('posY') || this.height / 2
+        this.camera.x = this.storage.getNumber('posX') || this.pixi.screen.width / 2
+        this.camera.y = this.storage.getNumber('posY') || this.pixi.screen.height / 2
     }
 
     private controllButtons() {
@@ -110,7 +104,7 @@ export class Main {
 
         buttons.addChild(new Button({
             x: 30,
-            y: this.height - 50 - 10,
+            y: this.pixi.screen.height - 50 - 10,
 
             text: 'Центрировать',
 
@@ -127,46 +121,11 @@ export class Main {
             }
         }))
 
-        this.app.stage.addChild(buttons)
-    }
-
-    private createPlanetInfo(planet: AbstractPlanet) {
-        if (this.planetInfo) {
-            this.planetInfo.planet.isSelected = false
-            this.planetInfo.destroy()
-        }
-
-        planet.isSelected = true
-        const container = new PlanetInfoContainer(planet, this.app.ticker)
-
-        container.x = this.width - container.width - 2
-        container.y = this.height - container.height - 2
-
-        this.planetInfo = container
-
-        this.app.stage.addChild(container);
+        this.pixi.stage.addChild(buttons)
     }
 
     private setupTexts() {
         const texts = new PIXI.Container()
-
-        this.texts.scale = new PIXI.Text('', { fill: 0xffffff, fontSize: 10 })
-        this.texts.scale.x = 0
-        this.texts.scale.y = this.height - this.texts.scale.height
-
-        this.texts.X = new PIXI.Text('', { fill: 0xffffff, fontSize: 10 })
-        this.texts.X.y = this.height - this.texts.X.height
-
-        this.texts.Y = new PIXI.Text('', { fill: 0xffffff, fontSize: 10 })
-        this.texts.Y.y = this.height - this.texts.Y.height
-
-        this.app.ticker.add(() => {
-            this.texts.X.x = this.texts.scale.x + this.texts.scale.width + 6
-            this.texts.X.text = `camX: ${this.camera.x.toFixed(2)}`
-
-            this.texts.Y.x = this.texts.X.x + this.texts.X.width + 6
-            this.texts.Y.text = `camY: ${this.camera.y.toFixed(2)}`
-        })
 
         let planetListY: number = 0
         for (const planetId in this.solar.planets) {
@@ -181,7 +140,7 @@ export class Main {
             planetListY += text.height + 2
 
             text.on('pointerdown', () => {
-                this.createPlanetInfo(planet);
+                this.ui.showPlanetInfo(planet);
                 this.camera.follow(planet)
                 this.infoLocked = true
             })
@@ -210,52 +169,10 @@ export class Main {
             texts.addChild(text)
         }
 
-        for (const key in this.texts) {
-            texts.addChild(this.texts[key])
-        }
-
-        this.app.stage.addChild(texts)
-    }
-
-    private setupEvents() {
-        window.onresize = () => {
-            const offsetX = window.innerWidth - this.width
-            const offsetY = window.innerHeight - this.height
-
-            this.width = window.innerWidth
-            this.height = window.innerHeight
-
-            this.app.renderer.resize(this.width, this.height)
-            this.camera.resize(this.width, this.height)
-
-            this.camera.x += offsetX / 2
-            this.camera.y += offsetY / 2
-        }
-
-        this.camera.on('pointerdown', () => {
-            this.infoLocked = false
-            this.camera.plugins.remove('follow')
-            if (this.planetInfo) {
-                this.planetInfo.planet.isSelected = false
-                this.planetInfo.destroy()
-            }
-        })
-
-        this.camera.on('pointerup', () => {
-            this.storage.setNumber('posX', this.camera.position.x)
-            this.storage.setNumber('posY', this.camera.position.y)
-        })
-
-        this.camera.on('wheel', () => {
-            this.storage.setNumber('scale', this.scale)
-            this.storage.setNumber('posX', this.camera.position.x)
-            this.storage.setNumber('posY', this.camera.position.y)
-
-            this.texts.scale.text = `Масштаб: ${this.scale.toFixed(5)}X`
-        })
+        this.pixi.stage.addChild(texts)
     }
 }
 
 window.onload = () => {
-    new Main()
+    App.create()
 }
