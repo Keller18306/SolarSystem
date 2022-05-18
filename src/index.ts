@@ -141,7 +141,14 @@ export class App {
 
             text.on('pointerdown', () => {
                 this.ui.showPlanetInfo(planet);
-                this.camera.follow(planet)
+                this.camera.animate({
+                    position: planet,
+                    width: planet.radius * 2 * 8,
+                    time: this.scale < 0.01 ? 1500 : 0,
+                    callbackOnComplete: () => {
+                        this.camera.follow(planet)
+                    }
+                })
                 this.infoLocked = true
             })
 
