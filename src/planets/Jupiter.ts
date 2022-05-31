@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Jupiter extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'gas-planet',
         name: 'Юпитер',
         diameter: '139 822 км',
         mass: '1,898 * 10^27 кг',

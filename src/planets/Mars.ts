@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Mars extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'earth-planet',
         name: 'Марс',
         diameter: '6 792,4 км',
         mass: '6,42 * 10^23 кг',

@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Mercury extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'earth-planet',
         name: 'Меркурий',
         diameter: '4 879.4 км',
         mass: '3,3 * 10^23 кг',

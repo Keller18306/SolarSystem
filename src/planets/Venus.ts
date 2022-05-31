@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Venus extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'earth-planet',
         name: "Венера",
         diameter: "12 103,6 км",
         mass: "4,87 * 10^24 кг",

@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Moon extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'child',
         name: "Луна",
         diameter: "3 846 км",
         mass: "7,348 * 10^22 кг",

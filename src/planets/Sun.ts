@@ -2,6 +2,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Sun extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'star',
         name: "Солнце",
         diameter: "1,392 * 10^9 м",
         mass: "1,989 * 10^30 кг",

@@ -5,6 +5,7 @@ export class PlanetInfoContainer extends PIXI.Container {
     public planet: AbstractPlanet;
 
     private keys: { [key: string]: string } = {
+        type: 'Тип',
         name: 'Название',
         diameter: 'Диаметр',
         mass: 'Масса',
@@ -25,10 +26,30 @@ export class PlanetInfoContainer extends PIXI.Container {
         const info = Object.assign({}, planet.info);
 
         for (const key in info) {
-            this.addText(`${this.keys[key] || key}: ${info[key]}`)
+            let value: string = info[key];
+
+            if (key === 'type') {
+                switch (value) {
+                    case 'star':
+                        value = 'звезда';
+                        break;
+                    case 'earth-planet':
+                        value = 'планета земной группы';
+                        break;
+                    case 'gas-planet':
+                        value = 'планета-гигант';
+                        break;
+                    case 'child':
+                        value = 'спутник';
+                        break;
+                }
+            }
+
+            this.addText(`${this.keys[key] || key}: ${value}`)
         }
 
-        this.textY += 20
+        const endT = this.textY + 4
+        this.textY += 8
 
         const textX = this.addText('X: ' + planet.x.toFixed(3))
         const textY = this.addText('Y: ' + planet.y.toFixed(3))
@@ -44,6 +65,21 @@ export class PlanetInfoContainer extends PIXI.Container {
         this.on('destroyed', () => {
             ticker.remove(update)
         })
+
+        const graphics = new PIXI.Graphics();
+        graphics.beginFill(0xffffff, 1);
+        graphics.drawRect(-4, -4, this.width + 4 + 4, this.height + 4 + 4);
+        graphics.endFill();
+
+        graphics.beginHole();
+        graphics.drawRect(-3, -3, this.width + 3 + 3, this.height + 3 + 3);
+        graphics.endHole();
+
+        graphics.lineStyle(1, 0xffffff, 1);
+        graphics.moveTo(-4, endT);
+        graphics.lineTo(this.width + 4, endT);
+        
+        this.addChild(graphics);
     }
 
     protected addText(_text: string) {

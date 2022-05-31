@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Uranus extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'gas-planet',
         name: "Уран",
         diameter: "51800 км",
         mass: "8,68 * 10^25 кг",

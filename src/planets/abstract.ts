@@ -1,8 +1,10 @@
 import * as PIXI from 'pixi.js';
+import { App } from '..';
 import { Circle } from '../circle';
 import { Ring } from '../ring';
 
 export type PlanetInfo = {
+    type: 'star' | 'earth-planet' | 'gas-planet' | 'child',
     name: string; // Название
     diameter: string; // Диаметр
     mass: string; // Масса
@@ -37,8 +39,12 @@ export abstract class AbstractPlanet extends PIXI.Container {
     private _parent?: AbstractPlanet;
     private _textureSprite?: PIXI.Sprite;
 
+    protected app: App
+
     constructor(childPlanets: AbstractPlanet[] = []) {
         super();
+
+        this.app = App.getInstance();
 
         this.childPlanets = childPlanets;
         for (const child of this.childPlanets) {
@@ -46,6 +52,12 @@ export abstract class AbstractPlanet extends PIXI.Container {
         }
 
         this.interactive = true;
+        this.buttonMode = true;
+
+        this.on('pointerdown', (e, fn) => {
+            e.stopPropagation()
+            this.selectPlanet();
+        })
     }
 
     get solarX(): number {
@@ -66,12 +78,19 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
         if (this.planetTexture) {
             this.setupTexture();
-        } else {
+
             this.addChild(new Circle({
                 x: 0,
                 y: 0,
                 radius: this.radius / 50,
                 color: 0x03c400,
+            }))
+        } else {
+            this.addChild(new Circle({
+                x: 0,
+                y: 0,
+                radius: this.radius,
+                color: this.planetColor
             }))
         }
 
@@ -110,7 +129,15 @@ export abstract class AbstractPlanet extends PIXI.Container {
     private setupTexture() {
         if (!this.planetTexture) return;
 
-        const texture = PIXI.Texture.from(this.planetTexture);
+        let img: HTMLImageElement | string = this.app.resources.loaded.image[this.planetTexture]
+        if (!img) {
+            console.error('Texture not loaded:', this.planetTexture)
+            console.log('Start loading via pixi loader:', this.planetTexture)
+            img = this.planetTexture
+            return;
+        }
+
+        const texture = PIXI.Texture.from(img);
 
         const sprite = new PIXI.Sprite(texture);
         sprite.anchor.set(0.5);
@@ -193,5 +220,37 @@ export abstract class AbstractPlanet extends PIXI.Container {
         for (const planet of this.childPlanets) {
             planet.update(delta);
         }
+    }
+
+    public getChildPlanets(): AbstractPlanet[] {
+        return this.childPlanets;
+    }
+
+    public selectPlanet() {
+        console.log('select', this.info.name);
+        this.app.ui.showPlanetInfo(this);
+
+        this.app.camera.animate({
+            position: this,
+            width: this.radius * 2 * 8,
+            time: this.app.scale < 0.01 ? 1500 : 0,
+            callbackOnComplete: () => {
+                this.app.camera.follow(this)
+            }
+        })
+
+        this.app.infoLocked = true;
+        this.isSelected = true;
+    }
+
+    public deselectPlanet(hidePlanetInfo: boolean = true) {
+        this.app.camera.plugins.remove('follow')
+
+        if (hidePlanetInfo) {
+            this.app.ui.hidePlanetInfo(false)
+        }
+
+        this.app.infoLocked = false;
+        this.isSelected = false;
     }
 }

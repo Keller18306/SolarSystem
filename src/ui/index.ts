@@ -9,9 +9,12 @@ import { FPSText } from './texts/fps';
 import { TickersText } from './texts/tickers';
 import { RenderMsText } from './texts/renderms';
 import { ScaleText } from './texts/scale';
+import { PlanetList } from './components/planetList';
 
 export class AppUI {
     private app: App;
+
+    private loadingMessage?: PIXI.Text;
 
     constructor(app: App) {
         this.app = app;
@@ -42,15 +45,13 @@ export class AppUI {
             new RenderMsText(),
             new TickersText()
         ]))
+
+        container.addChild(new PlanetList(this.app.solar.planets['Sun']))
     }
 
     public showPlanetInfo(planet: AbstractPlanet): void {
-        if (this.app.planetInfo) {
-            this.app.planetInfo.planet.isSelected = false
-            this.app.planetInfo.destroy()
-        }
+        if (this.app.planetInfo) this.hidePlanetInfo()
 
-        planet.isSelected = true
         const container = new PlanetInfoContainer(planet, this.app.pixi.ticker)
 
         container.x = this.app.pixi.screen.width - container.width - 2
@@ -61,13 +62,36 @@ export class AppUI {
         this.app.pixi.stage.addChild(container);
     }
 
-    public hidePlanetInfo(): void {
-        if (this.app.planetInfo) {
-            this.app.planetInfo.planet.isSelected = false
-            this.app.planetInfo.destroy()
-            this.app.planetInfo = undefined
-        }
+    public hidePlanetInfo(deselect: boolean = true): void {
+        if (!this.app.planetInfo) return;
 
-        this.app.infoLocked = false
+        if (deselect) {
+            this.app.planetInfo.planet.deselectPlanet(false)
+        }
+        this.app.planetInfo.destroy()
+        this.app.planetInfo = undefined
+    }
+
+    public showLoadingMessage(): void {
+        if (this.loadingMessage) return;
+
+        this.loadingMessage = new PIXI.Text('Loading Resources...', {
+            fontFamily: 'Arial',
+            fontSize: 64,
+            fill: 0xffffff,
+            align: 'center'
+        })
+
+        this.loadingMessage.x = this.app.pixi.screen.width / 2 - this.loadingMessage.width / 2
+        this.loadingMessage.y = this.app.pixi.screen.height / 2 - this.loadingMessage.height / 2
+
+        this.app.pixi.stage.addChild(this.loadingMessage)
+    }
+
+    public hideLoadingMessage(): void {
+        if (!this.loadingMessage) return;
+
+        this.app.pixi.stage.removeChild(this.loadingMessage)
+        this.loadingMessage = undefined
     }
 }

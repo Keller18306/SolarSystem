@@ -57,12 +57,7 @@ export class AppEvents {
     }
 
     public onPointerDown(): void {
-        this.app.infoLocked = false
-        this.camera.plugins.remove('follow')
-        if (this.app.planetInfo) {
-            this.app.planetInfo.planet.isSelected = false
-            this.app.planetInfo.destroy()
-        }
+        this.app.ui.hidePlanetInfo()
     }
 
     public onPointerUp(): void {

@@ -19,7 +19,9 @@ export class Solar {
 
     constructor(app: App) {
         this.app = app;
+    }
 
+    public start() {
         this.planets.Sun = new Sun([
             this.planets.Mercury = new Mercury(),
             this.planets.Venus = new Venus(),
@@ -33,12 +35,22 @@ export class Solar {
             this.planets.Neptune = new Neptune()
         ])
 
-        this.app.camera.addChild(this.planets.Sun)
-    }
-
-    public start() {
         this.app.pixi.ticker.add((delta) => { 
             this.planets.Sun.update(delta)
         })
+
+        this.generateStars()
+        this.app.camera.addChild(this.planets.Sun)
+    }
+
+    public generateStars() {
+        const graphics = new PIXI.Graphics();
+
+        for (let i = 0; i < 1000; i++) {
+            graphics.beginFill(0xffffff, 0.3);
+            graphics.drawCircle(Math.random() * this.app.pixi.screen.width, Math.random() * this.app.pixi.screen.height, Math.random() * 1.5);
+        }
+
+        this.app.pixi.stage.addChildAt(graphics, 0);
     }
 }

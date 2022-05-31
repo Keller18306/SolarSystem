@@ -5,46 +5,67 @@ type ButtonParams = {
     y: number;
 
     text: string;
-    
+
     color: number;
     textColor: number;
 
-    onClick: () => void;
+    width?: number;
+    height?: number;
+
+    onClick: (button: Button) => void;
 }
 
 export class Button extends PIXI.Container {
+    private _buttonWidth?: number;
+    private _buttonHeight?: number;
+    private color: number;
+
+    private _text: PIXI.Text;
+    private _graphics: PIXI.Graphics;
+
     constructor(params: ButtonParams) {
         super();
 
+        this.color = params.color;
+
+        this._buttonWidth = params.width;
+        this._buttonHeight = params.height;
+
         this.interactive = true;
+        this.buttonMode = true;
 
-        this.on('pointerdown', () => {
-            params.onClick();
+        this.on('pointerdown', (e) => {
+            e.stopPropagation()
+            params.onClick(this);
         })
 
-        this.on('pointerup', () => {
-
-        })
-
-        const text = new PIXI.Text(params.text, {
+        this._text = new PIXI.Text('', {
             fill: params.textColor,
         })
 
-        const width = text.width + 10
-        const height = text.height + 10
+        this._text.anchor.set(0.5, 0.5);
 
-        text.anchor.set(0.5, 0.5);
-        text.position.set(width / 2, height / 2);
+        this._graphics = new PIXI.Graphics();
 
-        const graphics = new PIXI.Graphics();
+        this.addChild(this._graphics);
+        this.addChild(this._text);
 
-        graphics.beginFill(params.color, 1);
-        graphics.drawRect(0, 0, width, height);
-        graphics.endFill();
-
-        this.addChild(graphics);
-        this.addChild(text);
+        this.text = params.text;
 
         this.position.set(params.x, params.y);
+    }
+
+    public set text(value: string) {
+        this._text.text = value
+
+        const width = Math.max(this._buttonWidth || 0, this._text.width + 10)
+        const height = Math.max(this._buttonHeight || 0, this._text.height + 4)
+
+        this._text.position.set(width / 2, height / 2);
+
+        this._graphics.clear()
+        this._graphics.beginFill(this.color, 1);
+        this._graphics.drawRect(0, 0, width, height);
+        this._graphics.endFill();
     }
 }

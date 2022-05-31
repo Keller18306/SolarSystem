@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Earth extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'earth-planet',
         name: "Земля",
         diameter: "12 742 км",
         mass: "5,972 * 10^24 кг",

@@ -22,7 +22,7 @@ export class App {
 
     public static create(): App {
         if (this._instance) throw new Error('App already created')
-        
+
         this._instance = new App()
 
         return this._instance
@@ -86,17 +86,19 @@ export class App {
     }
 
     public async run() {
+        this.ui.showLoadingMessage()
         await this.resources.startLoding()
 
         this.solar.start()
         this.ui.initTexts()
-        this.setupTexts()
         this.controllButtons()
-        
+
         this.scale = this.storage.getNumber('scale') || 0.002
 
         this.camera.x = this.storage.getNumber('posX') || this.pixi.screen.width / 2
         this.camera.y = this.storage.getNumber('posY') || this.pixi.screen.height / 2
+
+        this.ui.hideLoadingMessage()
     }
 
     private controllButtons() {
@@ -113,7 +115,7 @@ export class App {
             textColor: 0x000000,
 
             onClick: () => {
-                this.camera.plugins.remove('follow')
+                this.ui.hidePlanetInfo()
                 this.camera.moveCenter(0, 0)
 
                 this.storage.setNumber('posX', this.camera.x)
@@ -121,62 +123,39 @@ export class App {
             }
         }))
 
-        this.pixi.stage.addChild(buttons)
-    }
+        buttons.addChild(new Button({
+            x: 220,
+            y: this.pixi.screen.height - 50 - 10,
 
-    private setupTexts() {
-        const texts = new PIXI.Container()
+            text: 'Музыка (выкл)',
 
-        let planetListY: number = 0
-        for (const planetId in this.solar.planets) {
-            const planet = this.solar.planets[planetId]
+            color: 0xffffff,
 
-            const text = new PIXI.Text(planet.info.name, {
-                fill: 0xffffff, fontSize: 12
-            })
-            text.x = 2
-            text.y = planetListY
+            textColor: 0x000000,
 
-            planetListY += text.height + 2
+            onClick: (button) => {
+                const src = './static/audio/ambient.wav'
 
-            text.on('pointerdown', () => {
-                this.ui.showPlanetInfo(planet);
-                this.camera.animate({
-                    position: planet,
-                    width: planet.radius * 2 * 8,
-                    time: this.scale < 0.01 ? 1500 : 0,
-                    callbackOnComplete: () => {
-                        this.camera.follow(planet)
-                    }
-                })
-                this.infoLocked = true
-            })
-
-            /*planet.on('pointerdown', () => {
-                console.log('b', planet.info.name)
-                this.createPlanetInfo(planet)
-                this.infoLocked = true
-            })
-
-            planet.on('pointerenter', () => {
-                console.log('c')
-                this.createPlanetInfo(planet)
-            })
-
-            planet.on('pointerleave', () => {
-                console.log('d')
-                if (this.planetInfo && !this.infoLocked) {
-                    this.planetInfo.destroy()
+                const audio = this.resources.loaded.audio[src]
+                audio.onended = () => {
+                    console.log(`Music (${src}) ended, restarting...`)
+                    audio.play()
                 }
-            })*/
 
-            text.interactive = true
-            text.buttonMode = true
+                let state: string;
+                if (audio.paused) {
+                    audio.play()
+                    state = '(вкл)'
+                } else {
+                    audio.pause()
+                    state = '(выкл)'
+                }
 
-            texts.addChild(text)
-        }
+                button.text = `Музыка ${state}`
+            }
+        }))
 
-        this.pixi.stage.addChild(texts)
+        this.pixi.stage.addChild(buttons)
     }
 }
 

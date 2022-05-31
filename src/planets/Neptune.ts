@@ -3,6 +3,7 @@ import { AbstractPlanet, PlanetInfo } from "./abstract";
 
 export class Neptune extends AbstractPlanet {
     public info: PlanetInfo = {
+        type: 'gas-planet',
         name: 'Нептун',
         diameter: '49 528 км',
         mass: '1,024 * 10^26 кг',
