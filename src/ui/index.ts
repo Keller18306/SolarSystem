@@ -3,12 +3,7 @@ import { App } from "..";
 import { AbstractPlanet } from "../planets/abstract";
 import { PlanetInfoContainer } from './components/planetInfo';
 import { TextBox } from './components/textbox';
-import { CamXText } from './texts/camX';
-import { CamYText } from './texts/camY';
-import { FPSText } from './texts/fps';
-import { TickersText } from './texts/tickers';
-import { RenderMsText } from './texts/renderms';
-import { ScaleText } from './texts/scale';
+import { FieldText } from './texts/field';
 import { PlanetList } from './components/planetList';
 import { Loading } from './components/loading';
 
@@ -24,16 +19,15 @@ export class AppUI {
     public initTexts(): void {
         const container = this.app.pixi.stage
 
-        //this.app.camera.
         container.addChild(new TextBox({
             x: 1, y: 1, offset: 8,
             align: 'horizontal',
             alignX: 'left',
             alignY: 'bottom'
         }, [
-            new ScaleText(),
-            new CamXText(),
-            new CamYText()
+            new FieldText('scale', () => this.app.scale.toFixed(2)),
+            new FieldText('camX', () => this.app.camera.x.toFixed(2)),
+            new FieldText('camY', () => this.app.camera.y.toFixed(2))
         ]))
 
         container.addChild(new TextBox({
@@ -42,9 +36,9 @@ export class AppUI {
             alignX: 'right',
             alignY: 'top'
         }, [
-            new FPSText(),
-            new RenderMsText(),
-            new TickersText()
+            new FieldText('FPS', () => this.app.pixi.ticker.FPS.toFixed(2)),
+            new FieldText('Render', () => this.app.pixi.ticker.deltaMS.toFixed(2)),
+            new FieldText('Tickers', () => this.app.pixi.ticker.count.toFixed(2))
         ]))
 
         container.addChild(new PlanetList(this.app.solar.planets['Sun']))
