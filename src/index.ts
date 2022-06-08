@@ -160,5 +160,5 @@ export class App {
 }
 
 window.onload = () => {
-    App.create()
+    (window as any).app = App.create()
 }
