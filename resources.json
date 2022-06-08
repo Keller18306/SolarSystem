@@ -1,0 +1,17 @@
+{
+    "image": [
+        "./static/images/earth.png",
+        "./static/images/jupiter.png",
+        "./static/images/mars.png",
+        "./static/images/mercury.png",
+        "./static/images/moon.png",
+        "./static/images/neptune.png",
+        "./static/images/saturn.png",
+        "./static/images/sun.png",
+        "./static/images/uranus.png",
+        "./static/images/venus.png"
+    ],
+    "audio": [
+        "./static/audio/ambient.wav"
+    ]
+}
