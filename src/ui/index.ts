@@ -10,11 +10,12 @@ import { TickersText } from './texts/tickers';
 import { RenderMsText } from './texts/renderms';
 import { ScaleText } from './texts/scale';
 import { PlanetList } from './components/planetList';
+import { Loading } from './components/loading';
 
 export class AppUI {
     private app: App;
 
-    private loadingMessage?: PIXI.Text;
+    private loadingMessage?: Loading;
 
     constructor(app: App) {
         this.app = app;
@@ -75,15 +76,7 @@ export class AppUI {
     public showLoadingMessage(): void {
         if (this.loadingMessage) return;
 
-        this.loadingMessage = new PIXI.Text('Loading Resources...', {
-            fontFamily: 'Arial',
-            fontSize: 64,
-            fill: 0xffffff,
-            align: 'center'
-        })
-
-        this.loadingMessage.x = this.app.pixi.screen.width / 2 - this.loadingMessage.width / 2
-        this.loadingMessage.y = this.app.pixi.screen.height / 2 - this.loadingMessage.height / 2
+        this.loadingMessage = new Loading(this.app)
 
         this.app.pixi.stage.addChild(this.loadingMessage)
     }

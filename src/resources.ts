@@ -19,16 +19,21 @@ export class AppResources {
             audio: {}
         };
 
+    private isJsonLoaded: boolean = false;
+
     public async startLoding() {
         await this.initList();
-        await this.loadImages();
-        await this.loadAudios();
+        await Promise.all([
+            this.loadImages(),
+            this.loadAudios()
+        ]);
     }
 
     private async initList() {
         console.debug('Load resources list');
 
         const json = await this.loadJson();
+        this.isJsonLoaded = true;
 
         Object.assign(this.list, json);
     }
@@ -69,9 +74,13 @@ export class AppResources {
     }
 
     private async loadImages() {
+        const promises: Promise<HTMLImageElement>[] = [];
+
         for (const src of this.list.image) {
-            await this.loadImage(src);
+            promises.push(this.loadImage(src));
         }
+
+        await Promise.all(promises);
     }
 
     private async loadAudio(src: string): Promise<HTMLAudioElement> {
@@ -80,7 +89,7 @@ export class AppResources {
         const audio = new Audio();
 
         return new Promise<HTMLAudioElement>((resolve, reject) => {
-        
+
             audio.onloadeddata = () => {
                 this.loaded.audio[src] = audio;
 
@@ -96,8 +105,23 @@ export class AppResources {
     }
 
     private async loadAudios() {
+        const promises: Promise<HTMLAudioElement>[] = [];
+
         for (const src of this.list.audio) {
-            await this.loadAudio(src);
+            promises.push(this.loadAudio(src));
         }
+
+        await Promise.all(promises);
+    }
+
+    public getLoadingProgress() {
+        const loaded = Object.keys(this.loaded.image).length + Object.keys(this.loaded.audio).length + 1;
+        const total = Number(this.isJsonLoaded) + this.list.image.length + this.list.audio.length;
+
+        if (total === 0) {
+            return 0;
+        }
+
+        return loaded / total * 100;
     }
 }
