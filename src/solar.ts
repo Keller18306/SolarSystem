@@ -41,6 +41,7 @@ export class Solar {
 
         this.generateStars()
         this.app.camera.addChild(this.planets.Sun)
+        this.planets.Sun.init();
     }
 
     public generateStars() {

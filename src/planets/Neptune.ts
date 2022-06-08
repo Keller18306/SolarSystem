@@ -23,10 +23,4 @@ export class Neptune extends AbstractPlanet {
     public orbitAngle: number = rand(0, 360);
     public orbitSpeed: number = 0.05;
     public orbitColor: number = 0xffffff;
-
-    constructor(childPlanets?: AbstractPlanet[]) {
-        super(childPlanets);
-
-        this.init()
-    }
 }

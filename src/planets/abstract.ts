@@ -104,12 +104,23 @@ export abstract class AbstractPlanet extends PIXI.Container {
         this.addChild(text)
 
         this.update(0);
+
+        if (this._parent) {
+            this.getMainParent().addChild(this);
+        }
+
+        for(const planet of this.childPlanets) {
+            planet.init();
+        }
+    }
+
+    public getMainParent(): AbstractPlanet {
+        if (!this._parent) return this;
+
+        return this._parent.getMainParent();
     }
 
     public setParentPlanet(parent: AbstractPlanet) {
-        if (this._parent) return;
-
-        parent.addChild(this)
         this._parent = parent;
     }
 
@@ -188,11 +199,10 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
         const angleInRadians = this.orbitAngle * Math.PI / 180;
 
-        const _x = this.distance * Math.sin(angleInRadians);
-        const _y = this.distance * -Math.cos(angleInRadians);
+        const _x = this._parent.x + this.distance * Math.sin(angleInRadians);
+        const _y = this._parent.y + this.distance * -Math.cos(angleInRadians);
 
         this.position.set(_x, _y);
-        //console.log(this.orbitAngle.toFixed(2), this.position.x, this.position.y);
 
         this.orbitAngle += this.orbitSpeed * delta;
 
@@ -227,7 +237,7 @@ export abstract class AbstractPlanet extends PIXI.Container {
     }
 
     public selectPlanet() {
-        console.log('select', this.info.name);
+        console.log('select', this.info.name, `parent: ${this._parent?.info.name}`);
         this.app.ui.showPlanetInfo(this);
 
         this.app.camera.animate({

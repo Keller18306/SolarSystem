@@ -22,10 +22,4 @@ export class Sun extends AbstractPlanet {
     public orbitAngle: number = 0;
     public orbitSpeed: number = 0;
     public orbitColor: number = 0;
-
-    constructor(childPlanets?: AbstractPlanet[]) {
-        super(childPlanets);
-
-        this.init()
-    }
 }
