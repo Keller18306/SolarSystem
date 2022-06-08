@@ -25,7 +25,7 @@ export class AppUI {
             alignX: 'left',
             alignY: 'bottom'
         }, [
-            new FieldText('scale', () => this.app.scale.toFixed(2)),
+            new FieldText('scale', () => this.app.scale.toFixed(5)),
             new FieldText('camX', () => this.app.camera.x.toFixed(2)),
             new FieldText('camY', () => this.app.camera.y.toFixed(2))
         ]))
@@ -36,9 +36,9 @@ export class AppUI {
             alignX: 'right',
             alignY: 'top'
         }, [
-            new FieldText('FPS', () => this.app.pixi.ticker.FPS.toFixed(2)),
+            new FieldText('FPS', () => this.app.pixi.ticker.FPS.toFixed(1)),
             new FieldText('Render', () => this.app.pixi.ticker.deltaMS.toFixed(2)),
-            new FieldText('Tickers', () => this.app.pixi.ticker.count.toFixed(2))
+            new FieldText('Tickers', () => this.app.pixi.ticker.count.toString())
         ]))
 
         container.addChild(new PlanetList(this.app.solar.planets['Sun']))
