@@ -51,6 +51,8 @@ export class App {
             resolution: window.devicePixelRatio
         })
 
+        this.pixi.view.style.width = '100%'
+        this.pixi.view.style.height = '100%'
         document.body.appendChild(this.pixi.view)
 
         this.camera = new Viewport({
