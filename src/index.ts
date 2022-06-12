@@ -45,10 +45,12 @@ export class App {
 
     private constructor() {
         PIXI.utils.skipHello();
+
         this.pixi = new PIXI.Application({
             width: window.innerWidth,
             height: window.innerHeight,
-            resolution: window.devicePixelRatio
+            resolution: window.devicePixelRatio,
+            forceCanvas: new URLSearchParams(window.location.search).get('forceCanvas') === 'true'
         })
 
         this.pixi.view.style.width = '100%'
