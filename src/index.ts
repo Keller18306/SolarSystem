@@ -61,10 +61,7 @@ export class App {
             screenHeight: window.innerHeight,
         });
 
-        this.camera.drag().wheel().mouseEdges({
-            distance: 3,
-            speed: 150
-        })
+        this.camera.drag().wheel()
 
         this.pixi.stage.sortableChildren = true
 
