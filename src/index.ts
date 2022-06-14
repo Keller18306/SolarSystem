@@ -4,7 +4,6 @@ import { Button } from './ui/components/button';
 import { Solar } from './solar';
 import { Storage } from './storage';
 import { PlanetInfoContainer } from './ui/components/planetInfo';
-import { AbstractPlanet } from './planets/abstract';
 import { AppEvents } from './events';
 import { AppUI } from './ui';
 import { AppResources } from './resources';
@@ -61,7 +60,11 @@ export class App {
             screenWidth: window.innerWidth,
             screenHeight: window.innerHeight,
         });
-        this.camera.drag().wheel()
+
+        this.camera.drag().wheel().mouseEdges({
+            distance: 3,
+            speed: 150
+        })
 
         this.pixi.stage.sortableChildren = true
 
