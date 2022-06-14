@@ -40,6 +40,7 @@ export class Solar {
         })
 
         this.generateStars()
+        this.createComet()
         this.app.camera.addChild(this.planets.Sun)
         this.planets.Sun.init();
     }
@@ -53,5 +54,25 @@ export class Solar {
         }
 
         this.app.pixi.stage.addChildAt(graphics, 0);
+    }
+
+    public createComet() {
+        const graphics = new PIXI.Graphics();
+
+        graphics.lineStyle({
+            color: 0xffffff,
+            width: 1,  
+            alpha: 0.2,
+            native: true
+        });
+
+        const offset: number = 9000
+        const width: number = 35000
+        const height: number = 170000
+
+        graphics.drawEllipse(0, -height + offset, width, height);
+        graphics.rotation = 162.5
+
+        this.app.camera.addChildAt(graphics, 0);
     }
 }
