@@ -66,6 +66,14 @@ export class AppEvents {
     }
 
     public onWheel(): void {
+        if (this.app.scale < 0.0001) {
+            this.app.scale = 0.0001
+        }
+
+        if (this.app.scale > 5) {
+            this.app.scale = 5
+        }
+
         this.storage.setNumber('scale', this.app.scale)
         this.storage.setNumber('posX', this.camera.position.x)
         this.storage.setNumber('posY', this.camera.position.y)
