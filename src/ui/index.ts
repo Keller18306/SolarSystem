@@ -6,6 +6,7 @@ import { TextBox } from './components/textbox';
 import { FieldText } from './texts/field';
 import { PlanetList } from './components/planetList';
 import { Loading } from './components/loading';
+import { AbstractCosmicObject } from '../object';
 
 export class AppUI {
     private app: App;
@@ -44,7 +45,7 @@ export class AppUI {
         container.addChild(new PlanetList(this.app.solar.planets['Sun']))
     }
 
-    public showPlanetInfo(planet: AbstractPlanet): void {
+    public showPlanetInfo(planet: AbstractCosmicObject): void {
         if (this.app.planetInfo) this.hidePlanetInfo()
 
         const container = new PlanetInfoContainer(planet, this.app.pixi.ticker)
@@ -61,7 +62,7 @@ export class AppUI {
         if (!this.app.planetInfo) return;
 
         if (deselect) {
-            this.app.planetInfo.planet.deselectPlanet(false)
+            this.app.planetInfo.planet.unselectObject(false)
         }
         this.app.planetInfo.destroy()
         this.app.planetInfo = undefined

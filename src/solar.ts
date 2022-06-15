@@ -11,6 +11,7 @@ import { Uranus } from './planets/Uranus';
 import { Venus } from './planets/Venus';
 import { AbstractPlanet } from './planets/abstract';
 import { App } from '.';
+import { Comet } from './comet';
 
 export class Solar {
     private app: App;
@@ -40,8 +41,8 @@ export class Solar {
         })
 
         this.generateStars()
-        this.createComet()
         this.app.camera.addChild(this.planets.Sun)
+        this.createComet()
         this.planets.Sun.init();
     }
 
@@ -55,24 +56,16 @@ export class Solar {
 
         this.app.pixi.stage.addChildAt(graphics, 0);
     }
-
+    
     public createComet() {
-        const graphics = new PIXI.Graphics();
+        const comet = new Comet(this.app);
 
-        graphics.lineStyle({
-            color: 0xffffff,
-            width: 1,  
-            alpha: 0.2,
-            native: true
-        });
+        comet.init()
 
-        const offset: number = 9000
-        const width: number = 35000
-        const height: number = 170000
-
-        graphics.drawEllipse(0, -height + offset, width, height);
-        graphics.rotation = 162.5
-
-        this.app.camera.addChildAt(graphics, 0);
+        this.app.pixi.ticker.add((delta) => {
+            comet.update(delta)
+        })
+            
+        this.app.camera.addChild(comet)
     }
 }

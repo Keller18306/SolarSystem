@@ -1,26 +1,10 @@
 import * as PIXI from 'pixi.js';
 import { App } from '..';
 import { Circle } from '../circle';
+import { AbstractCosmicObject } from '../object';
 import { Ring } from '../ring';
 
-export type PlanetInfo = {
-    type: 'star' | 'earth-planet' | 'gas-planet' | 'child',
-    name: string; // Название
-    diameter: string; // Диаметр
-    mass: string; // Масса
-    volume: string; // Объем
-    density: string; // Плотность
-    gravity: string; // Сила притяжения
-    temperature: string; // Температура
-    pressure: string; // Давление
-
-    [key: string]: string
-}
-
-export abstract class AbstractPlanet extends PIXI.Container {
-    public abstract info: PlanetInfo;
-
-    public abstract radius: number;
+export abstract class AbstractPlanet extends AbstractCosmicObject {
     public abstract distance: number;
     public planetColor?: number;
     public planetTexture?: string;
@@ -28,8 +12,8 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
     public isSelected: boolean = false;
     public abstract drawOrbit: boolean;
-    private orbit?: Ring;
-    private selectedOrbit?: Ring;
+    protected orbit?: Ring;
+    protected selectedOrbit?: Ring;
     public abstract orbitAngle: number;
     public abstract orbitSpeed: number;
     public abstract orbitColor: number;
@@ -38,8 +22,6 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
     private _parent?: AbstractPlanet;
     private _textureSprite?: PIXI.Sprite;
-
-    protected app: App
 
     constructor(childPlanets: AbstractPlanet[] = []) {
         super();
@@ -50,14 +32,6 @@ export abstract class AbstractPlanet extends PIXI.Container {
         for (const child of this.childPlanets) {
             child.setParentPlanet(this);
         }
-
-        this.interactive = true;
-        this.buttonMode = true;
-
-        this.on('pointerdown', (e, fn) => {
-            e.stopPropagation()
-            this.selectPlanet();
-        })
     }
 
     get solarX(): number {
@@ -72,9 +46,8 @@ export abstract class AbstractPlanet extends PIXI.Container {
         return mainPosition.y
     }
 
-    public init() {
-        this.setupOrbit()
-        this.setupCircle();
+    public override init() {
+        super.init();
 
         if (this.planetTexture) {
             this.setupTexture();
@@ -86,24 +59,8 @@ export abstract class AbstractPlanet extends PIXI.Container {
                 color: 0x03c400,
             }))
         } else {
-            this.addChild(new Circle({
-                x: 0,
-                y: 0,
-                radius: this.radius,
-                color: this.planetColor
-            }))
+            this.setupCircle()
         }
-
-        const text = new PIXI.Text(this.info.name, {
-            fill: 0x03c400, fontSize: this.radius / 6
-        })
-
-        text.x = 10
-        text.y = -text.height
-
-        this.addChild(text)
-
-        this.update(0);
 
         if (this._parent) {
             this.getMainParent().addChild(this);
@@ -160,7 +117,7 @@ export abstract class AbstractPlanet extends PIXI.Container {
         this.addChild(sprite);
     }
 
-    private setupOrbit() {
+    protected setupOrbit() {
         if (!this._parent) return;
 
         this.orbit = new Ring({
@@ -184,10 +141,6 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
         this._parent.addChildAt(this.orbit, 0);
         this._parent.addChildAt(this.selectedOrbit, 0);
-    }
-
-    updateOrbit() {
-        if (!this.drawOrbit || !this._parent) return;
     }
 
     private updateSelf(delta: number) {
@@ -234,33 +187,5 @@ export abstract class AbstractPlanet extends PIXI.Container {
 
     public getChildPlanets(): AbstractPlanet[] {
         return this.childPlanets;
-    }
-
-    public selectPlanet() {
-        console.log('select', this.info.name, `parent: ${this._parent?.info.name}`);
-        this.app.ui.showPlanetInfo(this);
-
-        this.app.camera.animate({
-            position: this,
-            width: this.radius * 2 * 8,
-            time: this.app.scale < 0.01 ? 1500 : 0,
-            callbackOnComplete: () => {
-                this.app.camera.follow(this)
-            }
-        })
-
-        this.app.infoLocked = true;
-        this.isSelected = true;
-    }
-
-    public deselectPlanet(hidePlanetInfo: boolean = true) {
-        this.app.camera.plugins.remove('follow')
-
-        if (hidePlanetInfo) {
-            this.app.ui.hidePlanetInfo(false)
-        }
-
-        this.app.infoLocked = false;
-        this.isSelected = false;
     }
 }

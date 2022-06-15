@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js'
+import { AbstractCosmicObject } from '../../object';
 import { AbstractPlanet } from '../../planets/abstract';
 
 export class PlanetInfoContainer extends PIXI.Container {
-    public planet: AbstractPlanet;
+    public planet: AbstractCosmicObject;
 
     private keys: { [key: string]: string } = {
         type: 'Тип',
@@ -18,7 +19,7 @@ export class PlanetInfoContainer extends PIXI.Container {
 
     private textY: number = 0
 
-    constructor(planet: AbstractPlanet, ticker: PIXI.Ticker) {
+    constructor(planet: AbstractCosmicObject, ticker: PIXI.Ticker) {
         super();
 
         this.planet = planet
@@ -26,7 +27,8 @@ export class PlanetInfoContainer extends PIXI.Container {
         const info = Object.assign({}, planet.info);
 
         for (const key in info) {
-            let value: string = info[key];
+            let value: string | undefined = info[key];
+            if (value === undefined) continue;
 
             if (key === 'type') {
                 switch (value) {
@@ -41,6 +43,9 @@ export class PlanetInfoContainer extends PIXI.Container {
                         break;
                     case 'child':
                         value = 'спутник';
+                        break;
+                    case 'comet':
+                        value = 'комета';
                         break;
                 }
             }

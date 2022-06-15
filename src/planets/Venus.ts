@@ -1,8 +1,9 @@
 import { rand } from "../utils/rand";
-import { AbstractPlanet, PlanetInfo } from "./abstract";
+import { AbstractPlanet } from "./abstract";
+import { ObjectInfo } from "../object";
 
 export class Venus extends AbstractPlanet {
-    public info: PlanetInfo = {
+    public info: ObjectInfo = {
         type: 'earth-planet',
         name: "Венера",
         diameter: "12 103,6 км",

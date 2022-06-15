@@ -37,7 +37,7 @@ export class PlanetList extends PIXI.Container {
         this._y += this._offsetY + text.height;
 
         text.on('pointerdown', () => {
-            planet.selectPlanet()
+            planet.selectObject()
         })
 
         this.addChild(text);
