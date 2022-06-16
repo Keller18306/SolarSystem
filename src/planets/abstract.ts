@@ -51,16 +51,11 @@ export abstract class AbstractPlanet extends AbstractCosmicObject {
 
         if (this.planetTexture) {
             this.setupTexture();
-
-            this.addChild(new Circle({
-                x: 0,
-                y: 0,
-                radius: this.radius / 50,
-                color: 0x03c400,
-            }))
         } else {
             this.setupCircle()
         }
+
+        this.setupText()
 
         if (this._parent) {
             this.getMainParent().addChild(this);

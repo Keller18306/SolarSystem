@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import { AbstractCosmicObject } from '../../object';
 import { AbstractPlanet } from '../../planets/abstract'
 
 export class PlanetList extends PIXI.Container {
@@ -7,23 +8,34 @@ export class PlanetList extends PIXI.Container {
 
     private _y: number = 0;
 
-    constructor(mainPlanet: AbstractPlanet) {
+    constructor(mainPlanet: AbstractCosmicObject | AbstractCosmicObject[]) {
         super()
 
-        this.planetAction(mainPlanet, 0);
+        if (!Array.isArray(mainPlanet)) mainPlanet = [mainPlanet]
+
+        for (const object of mainPlanet) {
+            if (object instanceof AbstractPlanet) {
+                this.planetAction(object, 0);
+
+                continue;
+            }
+
+            this.setPlanetText(object, 0);
+        }
+
     }
 
     private planetAction(planet: AbstractPlanet, xLevel: number) {
         this.setPlanetText(planet, xLevel);
-        
+
         const planets = planet.getChildPlanets();
         for (const child of planets) {
-            this.planetAction(child, xLevel+1);
+            this.planetAction(child, xLevel + 1);
         }
     }
 
-    private setPlanetText(planet: AbstractPlanet, xLevel: number) {
-        const text = new PIXI.Text('• '+planet.info.name, {
+    private setPlanetText(planet: AbstractCosmicObject, xLevel: number) {
+        const text = new PIXI.Text('• ' + planet.info.name, {
             fontSize: 12,
             fill: 0xffffff,
         })

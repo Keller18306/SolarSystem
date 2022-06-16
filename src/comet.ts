@@ -39,6 +39,8 @@ export class Comet extends AbstractCosmicObject {
             radius: this.radius,
             color: 0xffffff,
         }))
+
+        this.setupText()
     }
 
     protected setupOrbit() {

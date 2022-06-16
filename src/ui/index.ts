@@ -42,7 +42,10 @@ export class AppUI {
             new FieldText('Tickers', () => this.app.pixi.ticker.count.toString())
         ]))
 
-        container.addChild(new PlanetList(this.app.solar.planets['Sun']))
+        container.addChild(new PlanetList([
+            this.app.solar.planets['Sun'],
+            this.app.solar.comet!
+        ]))
     }
 
     public showPlanetInfo(planet: AbstractCosmicObject): void {

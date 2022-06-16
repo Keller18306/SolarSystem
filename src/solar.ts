@@ -17,6 +17,7 @@ export class Solar {
     private app: App;
 
     public planets: { [key: string]: AbstractPlanet } = {}
+    public comet?: Comet;
 
     constructor(app: App) {
         this.app = app;
@@ -59,6 +60,7 @@ export class Solar {
     
     public createComet() {
         const comet = new Comet(this.app);
+        this.comet = comet;
 
         comet.init()
 

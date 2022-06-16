@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { App } from '.';
+import { Circle } from './circle';
 
 export type ObjectInfo = {
     type: 'star' | 'earth-planet' | 'gas-planet' | 'child' | 'comet',
@@ -49,16 +50,25 @@ export abstract class AbstractCosmicObject extends PIXI.Container {
     public init() {
         this.setupOrbit()
 
+        this.update(0);
+    }
+
+    protected setupText() {
         const text = new PIXI.Text(this.info.name, {
             fill: 0x03c400, fontSize: this.radius / 6
         })
 
         text.x = 10
         text.y = -text.height
+        
+        this.addChild(new Circle({
+            x: 0,
+            y: 0,
+            radius: this.radius / 50,
+            color: 0x03c400,
+        }))
 
         this.addChild(text)
-
-        this.update(0);
     }
 
     public abstract update(delta: number): void;
