@@ -35,7 +35,8 @@ export class AppUI {
             x: 1, y: 1, offset: 0,
             align: 'vertical',
             alignX: 'right',
-            alignY: 'top'
+            alignY: 'top',
+            autoMaxWidth: true
         }, [
             new FieldText('FPS', () => this.app.pixi.ticker.FPS.toFixed(1)),
             new FieldText('Render', () => this.app.pixi.ticker.deltaMS.toFixed(2)),

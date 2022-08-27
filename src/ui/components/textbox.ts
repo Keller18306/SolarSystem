@@ -11,7 +11,8 @@ type TextBoxParams = {
     align?: Align,
     alignX?: AlignX,
     alignY?: AlignY,
-    offset: number
+    offset: number,
+    autoMaxWidth?: boolean
 }
 
 export class TextBox extends PIXI.Container {
@@ -19,10 +20,12 @@ export class TextBox extends PIXI.Container {
 
     private _x: number;
     private _y: number;
+    private _maxWidth?: number
     private textOffset: number;
     private align: Align;
     private alignX: AlignX;
     private alignY: AlignY;
+    private autoMaxWidth: boolean;
     private texts: PIXI.Text[] = [];
 
     constructor(params: TextBoxParams, texts: PIXI.Text[]) {
@@ -34,7 +37,8 @@ export class TextBox extends PIXI.Container {
         this.align = params.align || 'horizontal';
         this.alignX = params.alignX || 'left';
         this.alignY = params.alignY || 'top';
-        this.texts = texts
+        this.autoMaxWidth = params.autoMaxWidth || false;
+        this.texts = texts;
 
         this.app = App.getInstance();
 
@@ -85,6 +89,14 @@ export class TextBox extends PIXI.Container {
         if (this.align === 'vertical') {
             width = maxWidth;
             height += this.textOffset * (this.texts.length - 1);
+
+            if (this.autoMaxWidth) {
+                if (this._maxWidth === undefined || width > this._maxWidth) {
+                    this._maxWidth = width;
+                } else {
+                    width = this._maxWidth;
+                }
+            }
         }
 
         return {
