@@ -24,14 +24,7 @@ jobs:
           yarn
           yarn electron-make
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
-          keep_files: false
-
-      - name: Publish
+      - name: Upload
         uses: actions/upload-artifact@v3
         with:
           path: /out/make/zip/win32/x64/*
