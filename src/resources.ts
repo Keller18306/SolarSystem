@@ -21,6 +21,23 @@ export class AppResources {
 
     private isJsonLoaded: boolean = false;
 
+    public isElectron(): boolean {
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        if (userAgent.indexOf(' electron/') > -1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public resolvePath(path: string): string {
+        if (this.isElectron()) {
+            return path.replace(/^\.\//i, 'fs://')
+        }
+
+        return path;
+    }
+
     public async startLoding() {
         await this.initList();
         await Promise.all([
@@ -47,7 +64,7 @@ export class AppResources {
             }
         })
 
-        request.open('GET', './resources.json', true);
+        request.open('GET', this.resolvePath('./resources.json'), true);
         request.send();
 
         return promise;
@@ -69,7 +86,7 @@ export class AppResources {
                 reject(e);
             }
 
-            image.src = src;
+            image.src = this.resolvePath(src);
         })
     }
 
@@ -100,7 +117,7 @@ export class AppResources {
                 reject(e);
             }
 
-            audio.src = src;
+            audio.src = this.resolvePath(src);
         });
     }
 

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { App } from '../..';
+import { App } from '../../app';
 
 type Align = 'vertical' | 'horizontal';
 type AlignX = 'left' | 'center' | 'right'

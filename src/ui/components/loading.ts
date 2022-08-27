@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { App } from '../..';
+import { App } from '../../app';
 import { AppResources } from '../../resources';
 
 export class Loading extends PIXI.Container {

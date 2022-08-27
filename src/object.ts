@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { App } from '.';
+import { App } from './app';
 import { Circle } from './circle';
 
 export type ObjectInfo = {

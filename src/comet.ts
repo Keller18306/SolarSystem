@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { App } from '.';
+import { App } from './app';
 import { Circle } from './circle';
 import { AbstractCosmicObject, ObjectInfo } from './object';
 import { rand } from './utils/rand';

@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { App } from "..";
+import { App } from "../app";
 import { AbstractPlanet } from "../planets/abstract";
 import { PlanetInfoContainer } from './components/planetInfo';
 import { TextBox } from './components/textbox';
@@ -7,17 +7,34 @@ import { FieldText } from './texts/field';
 import { PlanetList } from './components/planetList';
 import { Loading } from './components/loading';
 import { AbstractCosmicObject } from '../object';
+import { Button } from './components/button';
+import { ClickableText } from './texts/clickable';
 
 export class AppUI {
     private app: App;
 
     private loadingMessage?: Loading;
+    private buttons: PIXI.Container;
 
     constructor(app: App) {
         this.app = app;
+
+        this.buttons = new PIXI.Container();
+        this.app.pixi.stage.addChild(this.buttons);
     }
 
-    public initTexts(): void {
+    public init() {
+        this.initTexts();
+        this.initButtons();
+    }
+
+    public redrawButtons() {
+        this.buttons.removeChild(...this.buttons.children);
+
+        this.initButtons();
+    }
+
+    private initTexts(): void {
         const container = this.app.pixi.stage
 
         container.addChild(new TextBox({
@@ -47,6 +64,68 @@ export class AppUI {
             this.app.solar.planets['Sun'],
             this.app.solar.comet!
         ]))
+
+        container.addChild(new TextBox({
+            x: 0,
+            y: 10,
+            offset: 0,
+            alignX: 'center'
+        }, [
+            new ClickableText('Made by Keller (GitHub)', 'https://github.com/Keller18306')
+        ]))
+    }
+
+    private initButtons() {
+        this.buttons.addChild(new Button({
+            x: 30,
+            y: this.app.pixi.screen.height - 50 - 10,
+
+            text: 'Центрировать',
+
+            color: 0xffffff,
+
+            textColor: 0x000000,
+
+            onClick: () => {
+                this.app.ui.hidePlanetInfo()
+                this.app.camera.moveCenter(0, 0)
+
+                this.app.storage.setNumber('posX', this.app.camera.x)
+                this.app.storage.setNumber('posY', this.app.camera.y)
+            }
+        }))
+
+        this.buttons.addChild(new Button({
+            x: 220,
+            y: this.app.pixi.screen.height - 50 - 10,
+
+            text: 'Музыка (выкл)',
+
+            color: 0xffffff,
+
+            textColor: 0x000000,
+
+            onClick: (button) => {
+                const src = './static/audio/ambient.wav'
+
+                const audio = this.app.resources.loaded.audio[src]
+                audio.onended = () => {
+                    console.log(`Music (${src}) ended, restarting...`)
+                    audio.play()
+                }
+
+                let state: string;
+                if (audio.paused) {
+                    audio.play()
+                    state = '(вкл)'
+                } else {
+                    audio.pause()
+                    state = '(выкл)'
+                }
+
+                button.text = `Музыка ${state}`
+            }
+        }))
     }
 
     public showPlanetInfo(planet: AbstractCosmicObject): void {

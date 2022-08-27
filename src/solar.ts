@@ -10,16 +10,19 @@ import { Saturn } from './planets/Saturn';
 import { Uranus } from './planets/Uranus';
 import { Venus } from './planets/Venus';
 import { AbstractPlanet } from './planets/abstract';
-import { App } from '.';
+import { App } from './app';
 import { Comet } from './comet';
 
 export class Solar {
     private app: App;
 
+    public stars: PIXI.Graphics;
     public planets: { [key: string]: AbstractPlanet } = {}
     public comet?: Comet;
 
     constructor(app: App) {
+        this.stars = new PIXI.Graphics();
+
         this.app = app;
     }
 
@@ -48,14 +51,14 @@ export class Solar {
     }
 
     public generateStars() {
-        const graphics = new PIXI.Graphics();
+        this.stars.clear();
 
         for (let i = 0; i < 1000; i++) {
-            graphics.beginFill(0xffffff, 0.3);
-            graphics.drawCircle(Math.random() * this.app.pixi.screen.width, Math.random() * this.app.pixi.screen.height, Math.random() * 1.5);
-        }
+            this.stars.beginFill(0xffffff, 0.3);
+            this.stars.drawCircle(Math.random() * this.app.pixi.screen.width, Math.random() * this.app.pixi.screen.height, Math.random() * 1.5);
+        };
 
-        this.app.pixi.stage.addChildAt(graphics, 0);
+        this.app.pixi.stage.addChildAt(this.stars, 0);
     }
     
     public createComet() {

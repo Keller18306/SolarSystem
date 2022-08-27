@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { App } from '../..';
+import { App } from '../../app';
 
 export abstract class AbstractUIText extends PIXI.Text {
     protected app: App;
@@ -9,14 +9,16 @@ export abstract class AbstractUIText extends PIXI.Text {
 
         this.app = App.getInstance();
 
-        const updater = this.update.bind(this);
+        if (this.update) {
+            const updater = this.update.bind(this);
 
-        this.app.pixi.ticker.add(updater);
+            this.app.pixi.ticker.add(updater);
 
-        this.on('destroyed', () => {
-            this.app.pixi.ticker.remove(updater);
-        })
+            this.on('destroyed', () => {
+                this.app.pixi.ticker.remove(updater);
+            })
+        }
     }
 
-    public abstract update(delta: number): void;
+    public update?(delta: number): void;
 }

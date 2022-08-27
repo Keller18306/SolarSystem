@@ -1,17 +1,26 @@
-const path = require('path');
-
 module.exports = {
-    entry: './src/index.ts',
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        transpileOnly: true,
+                    },
+                },
+                exclude: /(node_modules|\.webpack)/,
             },
+            {
+                test: /\.css$/,
+                use: [
+                    { loader: 'style-loader' },
+                    { loader: 'css-loader' }
+                ]
+            }
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js', '.css'],
     }
 };
