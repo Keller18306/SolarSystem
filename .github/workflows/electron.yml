@@ -27,4 +27,4 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          path: /out/make/zip/win32/x64/*
+          path: ${{ github.workspace }}/out/make/zip/win32/x64/*
