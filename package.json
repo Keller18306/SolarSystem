@@ -6,13 +6,19 @@
     "web-start": "webpack serve --open --config webpack.web.dev.js",
     "web-build": "webpack --config webpack.web.prod.js",
     "electron-start": "electron-forge start",
-    "electron-build": "electron-forge package"
+    "electron-build": "electron-forge package",
+    "electron-make": "electron-forge make"
   },
   "author": "Keller",
   "license": "MIT",
   "description": "",
   "config": {
     "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-zip"
+        }
+      ],
       "plugins": [
         [
           "@electron-forge/plugin-webpack",
